@@ -15,8 +15,8 @@ enum CrossAxisAlignment {
   end,
 }
 
-class ColumnComponent extends PositionComponent {
-  ColumnComponent({
+class RowComponent extends PositionComponent {
+  RowComponent({
     super.position,
     super.size,
     super.scale,
@@ -43,46 +43,46 @@ class ColumnComponent extends PositionComponent {
     if (children.isEmpty) return;
 
     final components = children.whereType<PositionComponent>().toList();
-    double totalHeight = components.fold(0.0, (sum, child) => sum + child.height);
+    double totalWidth = components.fold(0.0, (sum, child) => sum + child.width);
     double totalSpacing = spacing * (components.length - 1);
     
-    double startY = 0;
+    double startX = 0;
     double spacingBetween = spacing;
 
-    // Handle main axis alignment (vertical)
+    // Handle main axis alignment (horizontal)
     switch (mainAxisAlignment) {
       case MainAxisAlignment.center:
-        startY = (height - (totalHeight + totalSpacing)) / 2;
+        startX = (width - (totalWidth + totalSpacing)) / 2;
       case MainAxisAlignment.end:
-        startY = height - (totalHeight + totalSpacing);
+        startX = width - (totalWidth + totalSpacing);
       case MainAxisAlignment.spaceBetween:
         spacingBetween = components.length > 1 ? 
-          (height - totalHeight) / (components.length - 1) : 0;
+          (width - totalWidth) / (components.length - 1) : 0;
       case MainAxisAlignment.spaceAround:
-        spacingBetween = (height - totalHeight) / (components.length + 1);
-        startY = spacingBetween;
+        spacingBetween = (width - totalWidth) / (components.length + 1);
+        startX = spacingBetween;
       case MainAxisAlignment.spaceEvenly:
-        spacingBetween = (height - totalHeight) / (components.length + 1);
-        startY = spacingBetween;
+        spacingBetween = (width - totalWidth) / (components.length + 1);
+        startX = spacingBetween;
       case MainAxisAlignment.start:
         // Default behavior
     }
 
-    double currentY = startY;
+    double currentX = startX;
     for (final child in components) {
-      // Handle cross axis alignment (horizontal)
-      double x = 0;
+      // Handle cross axis alignment (vertical)
+      double y = 0;
       switch (crossAxisAlignment) {
         case CrossAxisAlignment.center:
-          x = (width - child.width) / 2;
+          y = (height - child.height) / 2;
         case CrossAxisAlignment.end:
-          x = width - child.width;
+          y = height - child.height;
         case CrossAxisAlignment.start:
-          x = 0;
+          y = 0;
       }
       
-      child.position = Vector2(x, currentY);
-      currentY += child.height + spacingBetween;
+      child.position = Vector2(currentX, y);
+      currentX += child.width + spacingBetween;
     }
   }
 }

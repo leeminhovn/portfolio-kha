@@ -18,7 +18,6 @@ enum CrossAxisAlignment {
 class ColumnComponent extends PositionComponent {
   ColumnComponent({
     super.position,
-    super.size,
     super.scale,
     super.angle,
     super.anchor,

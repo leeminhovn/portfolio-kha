@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flame/components.dart';
 
 enum MainAxisAlignment {
@@ -26,25 +28,29 @@ class ColumnComponent extends PositionComponent {
     this.spacing = 0,
     this.mainAxisAlignment = MainAxisAlignment.start,
     this.crossAxisAlignment = CrossAxisAlignment.start,
-  });
+  }) {}
+  @override
+  FutureOr<void> onLoad() {
+    // TODO: implement onLoad
+    super.onLoad();
+    _arrangeChildren();
+  }
 
+  @override
+  // TODO: implement debugMode
+  bool get debugMode => true;
   final double spacing;
   final MainAxisAlignment mainAxisAlignment;
   final CrossAxisAlignment crossAxisAlignment;
-
-  @override
-  void onMount() {
-    super.onMount();
-    _arrangeChildren();
-  }
 
   void _arrangeChildren() {
     if (children.isEmpty) return;
 
     final components = children.whereType<PositionComponent>().toList();
-    double totalHeight = components.fold(0.0, (sum, child) => sum + child.height);
+    double totalHeight =
+        components.fold(0.0, (sum, child) => sum + child.height);
     double totalSpacing = spacing * (components.length - 1);
-    
+
     double startY = 0;
     double spacingBetween = spacing;
 
@@ -55,8 +61,9 @@ class ColumnComponent extends PositionComponent {
       case MainAxisAlignment.end:
         startY = height - (totalHeight + totalSpacing);
       case MainAxisAlignment.spaceBetween:
-        spacingBetween = components.length > 1 ? 
-          (height - totalHeight) / (components.length - 1) : 0;
+        spacingBetween = components.length > 1
+            ? (height - totalHeight) / (components.length - 1)
+            : 0;
       case MainAxisAlignment.spaceAround:
         spacingBetween = (height - totalHeight) / (components.length + 1);
         startY = spacingBetween;
@@ -64,7 +71,7 @@ class ColumnComponent extends PositionComponent {
         spacingBetween = (height - totalHeight) / (components.length + 1);
         startY = spacingBetween;
       case MainAxisAlignment.start:
-        // Default behavior
+      // Default behavior
     }
 
     double currentY = startY;
@@ -79,7 +86,7 @@ class ColumnComponent extends PositionComponent {
         case CrossAxisAlignment.start:
           x = 0;
       }
-      
+
       child.position = Vector2(x, currentY);
       currentY += child.height + spacingBetween;
     }

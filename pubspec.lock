@@ -65,14 +65,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.21.0"
-  flame_splash_screen:
-    dependency: "direct main"
-    description:
-      name: flame_splash_screen
-      sha256: b43811701df4cb426cc2204463f91888b7d164b9823e619c38abd7cbd777efbc
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.3.1"
   flutter:
     dependency: "direct main"
     description: flutter

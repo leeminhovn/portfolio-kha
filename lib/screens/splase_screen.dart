@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:math' show pi;
 
-import 'package:flame_splash_screen/flame_splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:portfolio_kha/base_app.dart';
 
@@ -12,28 +11,61 @@ class SplashScreenApp extends StatefulWidget {
   SplashScreenAppState createState() => SplashScreenAppState();
 }
 
-class SplashScreenAppState extends State<SplashScreenApp> {
+class SplashScreenAppState extends State<SplashScreenApp>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _animationController;
+  bool isLoaded = false;
+  @override
+  void initState() {
+    _animationController = AnimationController(
+        vsync: this, duration: Duration(seconds: 1), value: 0);
+    _effecting();
+
+    super.initState();
+  }
+
+  _effecting() async {
+    await _animationController.forward();
+    //   logic loading
+    await Future.delayed(Duration(milliseconds: 500));
+    //logic load
+    await _animationController.reverse();
+    isLoaded = true;
+    await Future.delayed(Duration(milliseconds: 500));
+
+    await _animationController.forward();
+    await _animationController.reverse();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: FlameSplashScreen(
-          controller: FlameSplashController(fadeInDuration: const Duration(milliseconds: 100)),
-          showBefore: (BuildContext context) {
-            return _Loading();
-          },
-       
-          theme: FlameSplashTheme.dark,
-          onFinish: (context) {
-
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (context) => const App(),
-            ),
-          );
-          }),
+      backgroundColor: Colors.black,
+      body: Center(
+        child: AnimatedBuilder(
+            animation: _animationController,
+            builder: (context, _) {
+              return AnimatedOpacity(
+                opacity: _animationController.value,
+                duration: Duration(milliseconds: 100),
+                child: isLoaded ? _TextAfterEffect("Đào Công Kha") : _Loading(),
+              );
+            }),
+      ),
     );
   }
 }
+//  Navigator.of(context).pushReplacement(
+//           MaterialPageRoute(
+//             builder: (context) => const App(),
+//           ),
+//         );
 
 class _Loading extends StatefulWidget {
   @override
@@ -59,7 +91,7 @@ class __LoadingState extends State<_Loading> {
 
   @override
   void dispose() {
-    _timer!.cancel();
+    _timer?.cancel();
     // TODO: implement dispose
     super.dispose();
   }
@@ -68,11 +100,11 @@ class __LoadingState extends State<_Loading> {
   Widget build(BuildContext context) {
     return Text(
       "Loading ${"." * _dotCount}",
-      style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.normal),
+      style: const TextStyle(
+          color: Colors.white, fontSize: 20, fontWeight: FontWeight.normal),
     );
   }
 }
-
 
 class _TextAfterEffect extends StatefulWidget {
   final String text;
@@ -81,7 +113,8 @@ class _TextAfterEffect extends StatefulWidget {
   State<StatefulWidget> createState() => __TextAfterEffectState();
 }
 
-class __TextAfterEffectState extends State<_TextAfterEffect> with SingleTickerProviderStateMixin {
+class __TextAfterEffectState extends State<_TextAfterEffect>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   final List<Color> _colors = [
     const Color(0xFFFFA500), // Orange
@@ -125,7 +158,6 @@ class __TextAfterEffectState extends State<_TextAfterEffect> with SingleTickerPr
               fontSize: 20,
               fontWeight: FontWeight.normal,
               color: Colors.white,
-              
             ),
           ),
         );

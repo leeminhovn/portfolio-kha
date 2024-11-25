@@ -9,6 +9,9 @@ enum WrapAlignment {
 }
 
 class WrapComponent extends PositionComponent {
+  @override
+  // TODO: implement debugMode
+  bool get debugMode => true;
   WrapComponent({
     super.position,
     super.size,
@@ -26,20 +29,20 @@ class WrapComponent extends PositionComponent {
     // TODO: implement onGameResize
     super.onGameResize(size);
   }
-  final double spacing;
 
+  final double spacing;
 
   final double runSpacing;
   final WrapAlignment alignment;
 
- 
-@override
+  @override
   void onMount() {
     // TODO: implement onMount
-     _arrangeChildren();
-    
+    _arrangeChildren();
+
     super.onMount();
   }
+
   void _arrangeChildren() {
     if (children.isEmpty) return;
 
@@ -67,12 +70,11 @@ class WrapComponent extends PositionComponent {
       rows.add(currentRow);
     }
 
-    
     double currentY = 0;
     for (final row in rows) {
       double rowWidth = row.fold(0.0, (sum, child) => sum + child.width);
       rowWidth += spacing * (row.length - 1);
-      
+
       double startX = 0;
       double spacingBetween = spacing;
 
@@ -80,19 +82,27 @@ class WrapComponent extends PositionComponent {
         case WrapAlignment.center:
           startX = (width - rowWidth) / 2;
         case WrapAlignment.spaceAround:
-          spacingBetween = (width - rowWidth + (spacing * (row.length - 1))) / (row.length + 1);
+          spacingBetween = (width - rowWidth + (spacing * (row.length - 1))) /
+              (row.length + 1);
           startX = spacingBetween;
         case WrapAlignment.spaceBetween:
-          spacingBetween = row.length > 1 ? (width - rowWidth + (spacing * (row.length - 1))) / (row.length - 1) : 0;
+          spacingBetween = row.length > 1
+              ? (width - rowWidth + (spacing * (row.length - 1))) /
+                  (row.length - 1)
+              : 0;
         case WrapAlignment.spaceEvenly:
-          spacingBetween = (width - rowWidth + (spacing * (row.length - 1))) / (row.length + 1);
+          spacingBetween = (width - rowWidth + (spacing * (row.length - 1))) /
+              (row.length + 1);
           startX = spacingBetween;
         case WrapAlignment.start:
-          // Default behavior, no changes needed
+        // Default behavior, no changes needed
       }
 
       double x = startX;
-      rowHeight = row.fold(0.0, (maxHeight, child) => maxHeight < child.height ? child.height : maxHeight);
+      rowHeight = row.fold(
+          0.0,
+          (maxHeight, child) =>
+              maxHeight < child.height ? child.height : maxHeight);
 
       for (final child in row) {
         child.position = Vector2(x, currentY);

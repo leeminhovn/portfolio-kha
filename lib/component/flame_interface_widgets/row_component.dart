@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flame/components.dart';
+import 'package:portfolio_kha/mixins/layout_mixin/size_component_provider.dart';
 
 enum MainAxisAlignment {
   start,
@@ -15,7 +18,7 @@ enum CrossAxisAlignment {
   end,
 }
 
-class RowComponent extends PositionComponent {
+class RowComponent extends PositionComponent with SizeComponentProvider{
   RowComponent({
     super.position,
     super.scale,
@@ -35,9 +38,14 @@ class RowComponent extends PositionComponent {
   @override
   void onMount() {
     super.onMount();
-    _arrangeChildren();
   }
-
+  @override
+  FutureOr<void> onLoad() {
+    // TODO: implement onLoad
+    _arrangeChildren();
+    
+    return super.onLoad();
+  }
   void _arrangeChildren() {
     if (children.isEmpty) return;
 
@@ -48,7 +56,6 @@ class RowComponent extends PositionComponent {
     double startX = 0;
     double spacingBetween = spacing;
 
-    // Handle main axis alignment (horizontal)
     switch (mainAxisAlignment) {
       case MainAxisAlignment.center:
         startX = (width - (totalWidth + totalSpacing)) / 2;
@@ -64,12 +71,10 @@ class RowComponent extends PositionComponent {
         spacingBetween = (width - totalWidth) / (components.length + 1);
         startX = spacingBetween;
       case MainAxisAlignment.start:
-        // Default behavior
     }
 
     double currentX = startX;
     for (final child in components) {
-      // Handle cross axis alignment (vertical)
       double y = 0;
       switch (crossAxisAlignment) {
         case CrossAxisAlignment.center:

@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flame/components.dart';
+import 'package:portfolio_kha/mixins/layout_mixin/size_component_provider.dart';
 
 enum WrapAlignment {
   start,
@@ -8,10 +11,10 @@ enum WrapAlignment {
   spaceEvenly,
 }
 
-class WrapComponent extends PositionComponent {
+class WrapComponent extends PositionComponent with SizeComponentProvider {
   @override
-  // TODO: implement debugMode
   bool get debugMode => true;
+  late final PositionComponent _parentUp;
   WrapComponent({
     super.position,
     super.size,
@@ -36,17 +39,17 @@ class WrapComponent extends PositionComponent {
   final WrapAlignment alignment;
 
   @override
-  void onMount() {
-    // TODO: implement onMount
+  FutureOr<void> onLoad() {
+    // TODO: implement onLoad
+    _parentUp = parent as PositionComponent;
     _arrangeChildren();
-
-    super.onMount();
+    print(size);
+    return super.onLoad();
   }
 
   void _arrangeChildren() {
     if (children.isEmpty) return;
 
-    // Group children by rows
     final rows = <List<PositionComponent>>[];
     List<PositionComponent> currentRow = [];
     double currentX = 0;
@@ -54,7 +57,7 @@ class WrapComponent extends PositionComponent {
 
     for (final child in children) {
       if (child is PositionComponent) {
-        if (currentX + child.width > width) {
+        if (currentX + child.width > _parentUp.width) {
           if (currentRow.isNotEmpty) {
             rows.add(currentRow);
             currentRow = [];

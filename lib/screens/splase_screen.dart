@@ -19,12 +19,23 @@ class SplashScreenAppState extends State<SplashScreenApp>
   void initState() {
     _animationController = AnimationController(
         vsync: this, duration: Duration(seconds: 1), value: 0);
-    _effecting();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      onfinish() {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => const App(),
+          ),
+        );
+      }
+
+      // _effecting(onfinish);
+      onfinish();
+    });
 
     super.initState();
   }
 
-  _effecting() async {
+  _effecting(void Function() onFinish) async {
     await _animationController.forward();
     //   logic loading
     await Future.delayed(Duration(milliseconds: 500));
@@ -35,11 +46,13 @@ class SplashScreenAppState extends State<SplashScreenApp>
 
     await _animationController.forward();
     await _animationController.reverse();
+    onFinish();
   }
 
   @override
   void dispose() {
     // TODO: implement dispose
+    _animationController.dispose();
     super.dispose();
   }
 
@@ -61,11 +74,6 @@ class SplashScreenAppState extends State<SplashScreenApp>
     );
   }
 }
-//  Navigator.of(context).pushReplacement(
-//           MaterialPageRoute(
-//             builder: (context) => const App(),
-//           ),
-//         );
 
 class _Loading extends StatefulWidget {
   @override

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flame/components.dart';
+import 'package:portfolio_kha/mixins/layout_mixin/size_component_provider.dart';
 
 enum MainAxisAlignment {
   start,
@@ -17,7 +18,7 @@ enum CrossAxisAlignment {
   end,
 }
 
-class ColumnComponent extends PositionComponent {
+class ColumnComponent extends PositionComponent with SizeComponentProvider {
   ColumnComponent({
     super.position,
     super.scale,
@@ -32,8 +33,8 @@ class ColumnComponent extends PositionComponent {
   @override
   FutureOr<void> onLoad() {
     // TODO: implement onLoad
-    super.onLoad();
     _arrangeChildren();
+    super.onLoad();
   }
 
   @override

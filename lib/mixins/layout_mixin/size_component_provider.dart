@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:flame/components.dart';
 
 mixin SizeComponentProvider on PositionComponent {
-  @override
-  FutureOr<void> onLoad() {
+ @override
+  void onMount() {
     double maxWidth = 0;
     double maxHeight = 0;
     children.whereType<PositionComponent>().forEach((a) {
@@ -19,6 +19,6 @@ mixin SizeComponentProvider on PositionComponent {
       }
     });
     size = Vector2(maxWidth, maxHeight);
-    return super.onLoad();
+    super.onMount();
   }
 }

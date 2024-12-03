@@ -17,7 +17,6 @@ class WrapComponent extends PositionComponent with SizeComponentProvider {
   late final PositionComponent _parentUp;
   WrapComponent({
     super.position,
-    super.size,
     super.scale,
     super.angle,
     super.anchor,

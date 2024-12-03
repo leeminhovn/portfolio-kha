@@ -21,7 +21,6 @@ class HomeScreen extends PositionComponent with HasGameReference {
               alignment: WrapAlignment.start,
               runSpacing: 10,
               spacing: 60,
-              size: size,
               children: [
                 ...List.generate(
                     100,

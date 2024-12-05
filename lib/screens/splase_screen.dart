@@ -28,8 +28,8 @@ class SplashScreenAppState extends State<SplashScreenApp>
         );
       }
 
-      // _effecting(onfinish);
-      onfinish();
+      _effecting(onfinish);
+      // onfinish();
     });
 
     super.initState();
@@ -45,6 +45,8 @@ class SplashScreenAppState extends State<SplashScreenApp>
     await Future.delayed(Duration(milliseconds: 500));
 
     await _animationController.forward();
+    await Future.delayed(Duration(milliseconds: 1000));
+
     await _animationController.reverse();
     onFinish();
   }

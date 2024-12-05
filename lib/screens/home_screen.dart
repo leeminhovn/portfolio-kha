@@ -16,18 +16,13 @@ class HomeScreen extends PositionComponent with HasGameReference {
     size = game.size;
     add(AlignComponent(
         alignment: Anchor.center,
-        child: ScrollComponent(size: Vector2(300, 300), items: [
+        child: ScrollComponent(size: size, items: [
           WrapComponent(
               alignment: WrapAlignment.start,
               runSpacing: 10,
               spacing: 60,
-              children: [
-                ...List.generate(
-                    100,
-                    (a) => RectangleComponent.square(
-                          size: 20,
-                        )..setColor(ColorHelper.randomBrightColor())).toList()
-              ])
+              children: []
+              )
         ]))
       ..debugMode = true);
     // add(ColumnComponent(children: [

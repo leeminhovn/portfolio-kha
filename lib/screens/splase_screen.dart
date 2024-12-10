@@ -3,6 +3,7 @@ import 'dart:math' show pi;
 
 import 'package:flutter/material.dart';
 import 'package:portfolio_kha/base_app.dart';
+import 'package:portfolio_kha/helpers/function_helpers.dart';
 
 class SplashScreenApp extends StatefulWidget {
   const SplashScreenApp({super.key});
@@ -11,15 +12,13 @@ class SplashScreenApp extends StatefulWidget {
   SplashScreenAppState createState() => SplashScreenAppState();
 }
 
-class SplashScreenAppState extends State<SplashScreenApp>
-    with SingleTickerProviderStateMixin {
+class SplashScreenAppState extends State<SplashScreenApp> with SingleTickerProviderStateMixin {
   late final AnimationController _animationController;
   bool isLoaded = false;
   @override
   void initState() {
-    _animationController = AnimationController(
-        vsync: this, duration: Duration(seconds: 1), value: 0);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    _animationController = AnimationController(vsync: this, duration: Duration(seconds: 1), value: 0);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       onfinish() {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
@@ -40,6 +39,7 @@ class SplashScreenAppState extends State<SplashScreenApp>
     //   logic loading
     await Future.delayed(Duration(milliseconds: 500));
     //logic load
+    await loadAssets();
     await _animationController.reverse();
     isLoaded = true;
     await Future.delayed(Duration(milliseconds: 500));
@@ -110,8 +110,7 @@ class __LoadingState extends State<_Loading> {
   Widget build(BuildContext context) {
     return Text(
       "Loading ${"." * _dotCount}",
-      style: const TextStyle(
-          color: Colors.white, fontSize: 20, fontWeight: FontWeight.normal),
+      style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.normal),
     );
   }
 }
@@ -123,8 +122,7 @@ class _TextAfterEffect extends StatefulWidget {
   State<StatefulWidget> createState() => __TextAfterEffectState();
 }
 
-class __TextAfterEffectState extends State<_TextAfterEffect>
-    with SingleTickerProviderStateMixin {
+class __TextAfterEffectState extends State<_TextAfterEffect> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   final List<Color> _colors = [
     const Color(0xFFFFA500), // Orange

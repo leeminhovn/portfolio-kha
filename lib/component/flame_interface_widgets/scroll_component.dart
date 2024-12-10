@@ -8,25 +8,32 @@ class ScrollComponent extends ClipComponent with DragCallbacks {
   late final double _maxHeightScrollValid;
   final List<PositionComponent> items;
 
+
+
   double maxHeightChildrent() {
-    final List<PositionComponent> childrenGet =
-        children.query<PositionComponent>().toList();
+    final List<PositionComponent> childrenGet = children.query<PositionComponent>().toList();
     childrenGet.forEach((element) {
       final double positionY = element.positionOfAnchor(Anchor.bottomCenter).y;
       if (positionY > _maxHeightListItem) {
         _maxHeightListItem = positionY;
       }
     });
-    _maxHeightScrollValid =
-        (_maxHeightListItem - size.y).clamp(0, _maxHeightListItem);
+    _maxHeightScrollValid = (_maxHeightListItem - size.y).clamp(0, _maxHeightListItem);
     return _maxHeightListItem;
+  }
+  @override
+  void update(double dt) {
+    
+   
+    super.update(dt);
   }
 
   @override
   void onMount() {
+    super.onMount();
+
     maxHeightChildrent();
     // TODO: implement onMount
-    super.onMount();
   }
 
   ScrollComponent({required super.size, required this.items, super.anchor})
@@ -41,6 +48,7 @@ class ScrollComponent extends ClipComponent with DragCallbacks {
   _handleMoveItems(double deltaY) {
     final double delTaHandle = -(deltaY * 1.35);
     scrollOffset += delTaHandle;
+    // sau khi kéo ra vượt ngưỡng, ta cần một hệ số giúp
     if (scrollOffset <= 0) {
       scrollOffset -= delTaHandle;
     } else if (scrollOffset >= _maxHeightScrollValid) {
@@ -53,6 +61,7 @@ class ScrollComponent extends ClipComponent with DragCallbacks {
   @override
   void onDragUpdate(DragUpdateEvent event) {
     final double deltaY = event.deviceDelta.y;
+    print(deltaY);
     _handleMoveItems(deltaY);
 
     super.onDragUpdate(event);
@@ -61,6 +70,7 @@ class ScrollComponent extends ClipComponent with DragCallbacks {
   @override
   Future<void> onLoad() async {
     priority = 99999999;
+    debugMode = true;
     // anchor = Anchor.topCenter;
     await addAll(items);
     super.onLoad();

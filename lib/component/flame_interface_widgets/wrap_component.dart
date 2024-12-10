@@ -26,23 +26,23 @@ class WrapComponent extends PositionComponent with SizeComponentProvider {
     this.runSpacing = 0,
     this.alignment = WrapAlignment.start,
   });
-  @override
-  void onGameResize(Vector2 size) {
-    // TODO: implement onGameResize
-    super.onGameResize(size);
-  }
 
   final double spacing;
 
   final double runSpacing;
   final WrapAlignment alignment;
+  @override
+  void onMount() {
+
+    super.onMount();
+  }
 
   @override
   FutureOr<void> onLoad() {
     // TODO: implement onLoad
     _parentUp = parent as PositionComponent;
     _arrangeChildren();
-    print(size);
+
     return super.onLoad();
   }
 
@@ -83,28 +83,27 @@ class WrapComponent extends PositionComponent with SizeComponentProvider {
       switch (alignment) {
         case WrapAlignment.center:
           startX = (width - rowWidth) / 2;
+          break;
         case WrapAlignment.spaceAround:
-          spacingBetween = (width - rowWidth + (spacing * (row.length - 1))) /
-              (row.length + 1);
+          spacingBetween = (width - rowWidth + (spacing * (row.length - 1))) / (row.length + 1);
           startX = spacingBetween;
+          break;
+
         case WrapAlignment.spaceBetween:
-          spacingBetween = row.length > 1
-              ? (width - rowWidth + (spacing * (row.length - 1))) /
-                  (row.length - 1)
-              : 0;
+          spacingBetween = row.length > 1 ? (width - rowWidth + (spacing * (row.length - 1))) / (row.length - 1) : 0;
+          break;
+       
         case WrapAlignment.spaceEvenly:
-          spacingBetween = (width - rowWidth + (spacing * (row.length - 1))) /
-              (row.length + 1);
+          spacingBetween = (width - rowWidth + (spacing * (row.length - 1))) / (row.length + 1);
           startX = spacingBetween;
+          break;
+
         case WrapAlignment.start:
         // Default behavior, no changes needed
       }
 
       double x = startX;
-      rowHeight = row.fold(
-          0.0,
-          (maxHeight, child) =>
-              maxHeight < child.height ? child.height : maxHeight);
+      rowHeight = row.fold(0.0, (maxHeight, child) => maxHeight < child.height ? child.height : maxHeight);
 
       for (final child in row) {
         child.position = Vector2(x, currentY);

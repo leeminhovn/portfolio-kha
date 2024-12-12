@@ -39,9 +39,9 @@ class HomeScreen extends PositionComponent with HasGameReference {
   }
 }
 
-class ItemLibary extends SpriteComponent {
+class ItemLibary extends PositionComponent {
   final Component Function(PositionComponent component) effect;
-  ItemLibary({super.size, required this.effect}) : super.fromImage(Flame.images.fromCache(AppImages.logo_image));
+  ItemLibary({super.size, required this.effect}) ;
   @override
   void onMount() {
     // TODO: implement onMount

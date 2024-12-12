@@ -176,9 +176,54 @@ class _ConicGradientComponent extends PositionComponent {
     canvas.rotate(_angle);
     canvas.drawRect(_rect, _shadowPaint);
     canvas.restore();
-    
+  }
+}
+
+
+
+class MoneyChangeStyle1 extends PositionComponent {
+  int _currentMoney;
+  int _targetMoney;
+  double _changeRate = 0; 
+  final TextPaint textPaint;
+
+  MoneyChangeStyle1({
+    required int initialMoney,
+    required this.textPaint,
+    super.position,
+    super.size,
+  }) : _currentMoney = initialMoney,
+       _targetMoney = initialMoney;
+
+  void changeMoney(int newMoney, double duration) {
+    if(isMounted) {
+     _targetMoney = newMoney;
+    _changeRate = (_targetMoney - _currentMoney) / duration;
+    } else {
+    _targetMoney = newMoney;
+    _currentMoney = newMoney;
+    }
+   
   }
 
+  @override
+  void render(Canvas canvas) {
+    super.render(canvas);
+    textPaint.render(canvas, 'Money: $_currentMoney', Vector2.zero());
+  }
 
-  
+  @override
+  void update(double dt) {
+    super.update(dt);
+    if (_currentMoney != _targetMoney) {
+      final change = (_changeRate * dt).round();
+      _currentMoney += change;
+
+      // Đảm bảo không vượt qua giá trị đích
+      if ((_changeRate > 0 && _currentMoney > _targetMoney) ||
+          (_changeRate < 0 && _currentMoney < _targetMoney)) {
+        _currentMoney = _targetMoney;
+      }
+    }
+  }
 }

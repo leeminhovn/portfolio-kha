@@ -27,37 +27,38 @@ class ScrollComponent extends ClipComponent with DragCallbacks {
     _maxHeightScrollValid = (_maxHeightListItem - size.y).clamp(0, _maxHeightListItem);
     return _maxHeightListItem;
   }
+
+    _handleStopWhenNearMin () {
+    if (_scrollOffset.abs() < 0.1) {
+          _scrollOffset = boundaryMin;
+    }
+  }
+  _handleStopWhenNearMax() {
+    if((-1* _scrollOffset + size.y )- _maxHeightListItem <= 0.1) {
+      _scrollOffset = -_maxHeightListItem + size.y;
+
+    }
+  }
   @override
   void update(double dt) {
     
-        if (!_isDragging) {
-      print("${_scrollOffset} ${boundaryMin}");
-      // Kiểm tra nếu vượt qua ranh giới
-      if (_scrollOffset < boundaryMin) {
+    if (!_isDragging) {
+      if ((-1* _scrollOffset + size.y )> _maxHeightListItem) {
         _velocity = -_scrollOffset * damping * dt; 
+        _scrollOffset += _velocity * dt; 
+        _handleUpdateItems(-_velocity* dt);
+        _handleStopWhenNearMax();
 
-        _scrollOffset += _velocity * dt; // Cập nhật vị trí
-        _handleUpdateItems(_velocity * dt);
+      } else if (_scrollOffset > boundaryMin) {
+        _velocity = -_scrollOffset * damping * dt; 
+        _scrollOffset += _velocity * dt; 
+        _handleUpdateItems(-_velocity* dt);
 
-        if (_scrollOffset.abs() < 0.1) {
-         _handleUpdateItems(boundaryMin - _scrollOffset);
-
-          _scrollOffset = boundaryMin;
-
-        } // Dừng khi gần ranh giới
-      } else if (_scrollOffset > _maxHeightListItem) {
-        _velocity = (_maxHeightListItem - _scrollOffset) * damping * dt;
-        _scrollOffset += _velocity * dt;
-        _handleUpdateItems(_velocity * dt);
-
-        if ((_maxHeightListItem - _scrollOffset).abs() < 0.1) _scrollOffset = _maxHeightListItem;
-      } else {
-        // Nếu không vượt qua ranh giới, giảm tốc tự nhiên
-        _velocity *= 0.9; // Giảm tốc độ dần
-        _scrollOffset += _velocity * dt;
-      }
-    }
+        _handleStopWhenNearMin();
+      } 
    
+    
+    }
     super.update(dt);
   }
   @override
@@ -94,7 +95,9 @@ class ScrollComponent extends ClipComponent with DragCallbacks {
 
     _isDragging = true;
     _scrollOffset += deltaY;
-    _velocity = 0; 
+    // _velocity = 0; 
+    _handleUpdateItems(-deltaY);
+
 
 
     super.onDragUpdate(event);

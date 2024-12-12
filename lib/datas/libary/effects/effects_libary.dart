@@ -49,7 +49,8 @@ class EffectsLibary {
       compo.changeMoney(100, 5);
     // });
         Future.delayed(Duration(milliseconds: 500), () {
-      compo.changeMoney(1000, 5);
+      compo.changeMoney(5000, 5);
+    
     });
     return compo;
   }

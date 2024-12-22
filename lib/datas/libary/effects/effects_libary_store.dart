@@ -227,3 +227,33 @@ class MoneyChangeStyle1 extends PositionComponent {
     }
   }
 }
+
+
+class BouncingScaleEffectOnce extends PositionComponent {
+  final PositionComponent componentEffectTo;
+  BouncingScaleEffectOnce({
+    required this.componentEffectTo,
+    required double scaleFrom  ,
+    double duration = 1,
+    super.size,
+  }) {
+
+    final Anchor anchorOld = componentEffectTo.anchor;
+    final Vector2 vectorIncreadToCenter = componentEffectTo.positionOfAnchor(Anchor.center) - componentEffectTo.position;
+    componentEffectTo.anchor = Anchor.center;
+    componentEffectTo.position += vectorIncreadToCenter;
+    componentEffectTo.scale = Vector2.all(scaleFrom);
+
+    componentEffectTo.add(
+      ScaleEffect.to(
+        Vector2.all(1),
+        EffectController(duration: duration ,  curve: Curves.bounceOut),
+        onComplete: () {
+          componentEffectTo.anchor = anchorOld;
+          componentEffectTo.position -= vectorIncreadToCenter;
+          
+          }, // Xoá sau khi hoàn tất
+      ),
+    );
+  }
+}

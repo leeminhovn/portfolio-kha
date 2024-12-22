@@ -53,13 +53,25 @@ class EffectsLibary {
     
     });
     return compo;
+ 
   }
-
+  static Component bouncingScaleEffectOnce(PositionComponent component) {
+      component.add(
+       SpriteComponent.fromImage(Flame.images.fromCache(AppImages.logo_image, ), size:  component.size)
+    );
+    return BouncingScaleEffectOnce(
+      componentEffectTo: component,
+      duration: 1,
+      scaleFrom: 0.7
+    
+    );
+  }
   static List<Component Function(PositionComponent component)> allEffects() => [
     sakeEffect, 
     boxBorderLightingStyle1,
     moneyChangeStyle1,
     floatingEffect,
+    bouncingScaleEffectOnce
   ];
 }
 

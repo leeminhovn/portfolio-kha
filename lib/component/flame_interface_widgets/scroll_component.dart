@@ -1,31 +1,40 @@
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/src/experimental/geometry/shapes/rectangle.dart';
+enum ScrollComponentDirection { vertical, horizontal }
 
 class ScrollComponent extends ClipComponent with DragCallbacks {
   double _scrollOffset = 0; // Vị trí cuộn hiện tại
   double _velocity = 0; // Tốc độ cuộn
   double boundaryMin = 0; // Ranh giới tối thiểu
   bool _isDragging = false;
-
+ScrollComponentDirection direction = ScrollComponentDirection.vertical;
   final double damping = 300; // Hệ số giảm dần để mô phỏng hiệu ứng nảy
 
-  double _maxHeightListItem = 0;
-  late final double _maxHeightScrollValid;
+  double _maxSizeScrollListItem = 0;
+  // late final double _maxHeightScrollValid;
   final List<PositionComponent> items;
 
 
+  ScrollComponent({required super.size, required this.items, super.anchor, this.direction = ScrollComponentDirection.vertical})
+  : super(
+      builder: (size) {
+        final double widthShop = size.x;
+        final double heightShop = size.y;
+        return Rectangle.fromLTWH(0, 0, widthShop, heightShop);
+      },
+    );
 
   double maxHeightChildrent() {
     final List<PositionComponent> childrenGet = children.query<PositionComponent>().toList();
     childrenGet.forEach((element) {
       final double positionY = element.positionOfAnchor(Anchor.bottomCenter).y;
-      if (positionY > _maxHeightListItem) {
-        _maxHeightListItem = positionY;
+      if (positionY > _maxSizeScrollListItem) {
+        _maxSizeScrollListItem = positionY;
       }
     });
-    _maxHeightScrollValid = (_maxHeightListItem - size.y).clamp(0, _maxHeightListItem);
-    return _maxHeightListItem;
+    // _maxHeightScrollValid = (_maxSizeScrollListItem - size.y).clamp(0, _maxSizeScrollListItem);
+    return _maxSizeScrollListItem;
   }
 
     _handleStopWhenNearMin () {
@@ -34,8 +43,8 @@ class ScrollComponent extends ClipComponent with DragCallbacks {
     }
   }
   _handleStopWhenNearMax() {
-    if((-1* _scrollOffset + size.y )- _maxHeightListItem <= 0.1) {
-      _scrollOffset = -_maxHeightListItem + size.y;
+    if((-1* _scrollOffset + size.y )- _maxSizeScrollListItem <= 0.1) {
+      _scrollOffset = -_maxSizeScrollListItem + size.y;
 
     }
   }
@@ -43,7 +52,7 @@ class ScrollComponent extends ClipComponent with DragCallbacks {
   void update(double dt) {
     
     if (!_isDragging) {
-      if ((-1* _scrollOffset + size.y )> _maxHeightListItem) {
+      if ((-1* _scrollOffset + size.y )> _maxSizeScrollListItem) {
         _velocity = -_scrollOffset * damping * dt; 
         _scrollOffset += _velocity * dt; 
         _handleUpdateItems(-_velocity* dt);
@@ -79,15 +88,7 @@ class ScrollComponent extends ClipComponent with DragCallbacks {
     // TODO: implement onMount
   }
 
-  ScrollComponent({required super.size, required this.items, super.anchor})
-      : super(
-          builder: (size) {
-            final double widthShop = size.x;
-            final double heightShop = size.y;
-            return Rectangle.fromLTWH(0, 0, widthShop, heightShop);
-          },
-        );
-
+ 
 
   @override
   void onDragUpdate(DragUpdateEvent event) {
@@ -114,7 +115,12 @@ class ScrollComponent extends ClipComponent with DragCallbacks {
 
   _handleUpdateItems(double valueOffset) {
     for (final child in children.where((a) => a is PositionComponent)) {
-      (child as PositionComponent).position.y -= valueOffset;
+     
+        if(direction == ScrollComponentDirection.vertical) {
+         (child as PositionComponent).position.y -= valueOffset;
+      } else {
+        (child as PositionComponent).position.x -= valueOffset;
+      }
     }
   }
 }

@@ -1,12 +1,9 @@
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:flame/components.dart';
-import 'package:flame/events.dart';
-import 'package:flame/flame.dart';
+import 'package:flutter/material.dart' hide WrapAlignment ;
 import 'package:portfolio_kha/component/flame_interface_widgets/scroll_component.dart';
 import 'package:portfolio_kha/component/flame_interface_widgets/wrap_component.dart';
-import 'package:portfolio_kha/constanst/app_images.dart';
 import 'package:portfolio_kha/datas/libary/effects/effects_libary.dart';
 
 class HomeScreen extends PositionComponent with HasGameReference {
@@ -24,9 +21,11 @@ class HomeScreen extends PositionComponent with HasGameReference {
             ...List.generate(listEffects.length, (index) {
               return ItemLibary(effect: listEffects[index], size: sizeItem);
             }),
-         
             
-          ])
+          ]),
+      
+
+
         ],
         
     )..position= Vector2(width*0.05, height*0.05));
@@ -52,6 +51,9 @@ class ItemLibary extends PositionComponent {
     super.onMount();
   }
 }
+
+
+
 
 
 

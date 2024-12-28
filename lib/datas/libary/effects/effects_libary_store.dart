@@ -186,15 +186,22 @@ class MoneyChangeStyle1 extends PositionComponent {
   int _targetMoney;
   double _changeRate = 0; 
   final TextPaint textPaint;
+  late final TextComponent textComponent;
 
   MoneyChangeStyle1({
     required int initialMoney,
     required this.textPaint,
     super.position,
+    super.anchor,
     super.size,
   }) : _currentMoney = initialMoney,
        _targetMoney = initialMoney;
-
+  @override
+  FutureOr<void> onLoad() {
+    textComponent = TextComponent(text:'$_currentMoney', textRenderer: textPaint);
+    add(textComponent);
+    return super.onLoad();
+  }
   void changeMoney(int newMoney, double duration) {
     if(isMounted) {
      _targetMoney = newMoney;
@@ -209,7 +216,6 @@ class MoneyChangeStyle1 extends PositionComponent {
   @override
   void render(Canvas canvas) {
     super.render(canvas);
-    textPaint.render(canvas, 'Money: $_currentMoney', Vector2.zero());
   }
 
   @override
@@ -225,6 +231,8 @@ class MoneyChangeStyle1 extends PositionComponent {
         _currentMoney = _targetMoney;
       }
     }
+    textComponent.text = '$_currentMoney';
+    size = textComponent.size;
   }
 }
 
@@ -235,6 +243,8 @@ class BouncingScaleEffectOnce extends PositionComponent {
     required this.componentEffectTo,
     required double scaleFrom  ,
     double duration = 1,
+    bool isLoop = false,
+    void Function()? onComplete,
     super.size,
   }) {
 
@@ -247,13 +257,57 @@ class BouncingScaleEffectOnce extends PositionComponent {
     componentEffectTo.add(
       ScaleEffect.to(
         Vector2.all(1),
-        EffectController(duration: duration ,  curve: Curves.bounceOut),
+        EffectController(duration: duration ,  curve: Curves.bounceOut, infinite: isLoop),
         onComplete: () {
           componentEffectTo.anchor = anchorOld;
           componentEffectTo.position -= vectorIncreadToCenter;
-          
+          onComplete?.call();
           }, // Xoá sau khi hoàn tất
       ),
     );
+  }
+}
+
+class SlotMachineReel extends PositionComponent {
+  // idItemsGet it is id of items get when slot machine reel stop
+  final List<String> idItemsGet;
+  // itemsWheel it is items in slot machine reel
+  final List<ItemSlotMachineReel> itemsWheel;
+  final int column;
+  void Function() onStartWheel;
+  void Function() onCompleteWheel;
+  final Vector2 sizeItem;
+
+  startWheel() {
+    onStartWheel();
+  }
+
+  SlotMachineReel({
+    required this.idItemsGet,
+    required this.itemsWheel,
+    required this.column,
+    required this.onStartWheel,
+    required this.onCompleteWheel,
+    required this.sizeItem,
+    super.size
+  });
+
+  @override
+  FutureOr<void> onLoad() {
+    width = sizeItem.x * column;
+    height = sizeItem.y;
+    debugColor = Colors.red;
+    debugMode = true;
+    return super.onLoad();
+  }
+}
+
+class ItemSlotMachineReel extends PositionComponent {
+  final String idItem;
+  ItemSlotMachineReel({required this.idItem, super.children});
+  @override
+  FutureOr<void> onLoad() {
+    ;
+    return super.onLoad();
   }
 }

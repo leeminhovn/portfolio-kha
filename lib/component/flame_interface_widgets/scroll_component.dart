@@ -3,7 +3,7 @@ import 'package:flame/events.dart';
 import 'package:flame/src/experimental/geometry/shapes/rectangle.dart';
 enum ScrollComponentDirection { vertical, horizontal }
 
-class ScrollComponent extends ClipComponent with DragCallbacks {
+class ScrollComponent extends PositionComponent with DragCallbacks {
   double _scrollOffset = 0; // Vị trí cuộn hiện tại
   double _velocity = 0; // Tốc độ cuộn
   double boundaryMin = 0; // Ranh giới tối thiểu
@@ -12,20 +12,19 @@ ScrollComponentDirection direction = ScrollComponentDirection.vertical;
   final double damping = 300; // Hệ số giảm dần để mô phỏng hiệu ứng nảy
 
   double _maxSizeScrollListItem = 0;
-  // late final double _maxHeightScrollValid;
   final List<PositionComponent> items;
 
 
   ScrollComponent({required super.size, required this.items, super.anchor, this.direction = ScrollComponentDirection.vertical})
   : super(
-      builder: (size) {
-        final double widthShop = size.x;
-        final double heightShop = size.y;
-        return Rectangle.fromLTWH(0, 0, widthShop, heightShop);
-      },
+      // builder: (size) {
+      //   final double widthShop = size.x;
+      //   final double heightShop = size.y;
+      //   return Rectangle.fromLTWH(0, 0, widthShop, heightShop);
+      // },
     );
 
-  double maxHeightChildrent() {
+  void maxHeightChildrent() {
     final List<PositionComponent> childrenGet = children.query<PositionComponent>().toList();
     childrenGet.forEach((element) {
       final double positionY = element.positionOfAnchor(Anchor.bottomCenter).y;
@@ -33,26 +32,35 @@ ScrollComponentDirection direction = ScrollComponentDirection.vertical;
         _maxSizeScrollListItem = positionY;
       }
     });
-    // _maxHeightScrollValid = (_maxSizeScrollListItem - size.y).clamp(0, _maxSizeScrollListItem);
-    return _maxSizeScrollListItem;
   }
 
+  void maxWidtgChildrent() {
+    final List<PositionComponent> childrenGet = children.query<PositionComponent>().toList();
+    childrenGet.forEach((element) {
+      final double positionX = element.positionOfAnchor(Anchor.centerRight).x;
+      if (positionX > _maxSizeScrollListItem) {
+        _maxSizeScrollListItem = positionX;
+      }
+    });
+  }
     _handleStopWhenNearMin () {
     if (_scrollOffset.abs() < 0.1) {
           _scrollOffset = boundaryMin;
     }
   }
   _handleStopWhenNearMax() {
-    if((-1* _scrollOffset + size.y )- _maxSizeScrollListItem <= 0.1) {
-      _scrollOffset = -_maxSizeScrollListItem + size.y;
+    final double sizeHandle = direction == ScrollComponentDirection.vertical ? size.y : size.x;
+    if((-1* _scrollOffset + sizeHandle )- _maxSizeScrollListItem <= 0.1) {
+      _scrollOffset = -_maxSizeScrollListItem + sizeHandle;
 
     }
   }
   @override
   void update(double dt) {
+    final double sizeHandle = direction == ScrollComponentDirection.vertical ? size.y : size.x;
     
     if (!_isDragging) {
-      if ((-1* _scrollOffset + size.y )> _maxSizeScrollListItem) {
+      if ((-1* _scrollOffset + sizeHandle )> _maxSizeScrollListItem) {
         _velocity = -_scrollOffset * damping * dt; 
         _scrollOffset += _velocity * dt; 
         _handleUpdateItems(-_velocity* dt);
@@ -83,21 +91,23 @@ ScrollComponentDirection direction = ScrollComponentDirection.vertical;
   @override
   void onMount() {
     super.onMount();
-
-    maxHeightChildrent();
-    // TODO: implement onMount
+    if(direction == ScrollComponentDirection.vertical) {
+      maxHeightChildrent();
+    } else {
+      maxWidtgChildrent();
+    }
   }
 
  
 
   @override
   void onDragUpdate(DragUpdateEvent event) {
-    final double deltaY = event.deviceDelta.y;
-
+// event.deviceDelta.y;
+    final double deltaHandle = direction == ScrollComponentDirection.vertical ? event.deviceDelta.y : event.deviceDelta.x;
     _isDragging = true;
-    _scrollOffset += deltaY;
+    _scrollOffset += deltaHandle;
     // _velocity = 0; 
-    _handleUpdateItems(-deltaY);
+    _handleUpdateItems(-deltaHandle);
 
 
 
@@ -107,7 +117,7 @@ ScrollComponentDirection direction = ScrollComponentDirection.vertical;
   @override
   Future<void> onLoad() async {
     priority = 99999999;
-    debugMode = true;
+    // ;
     // anchor = Anchor.topCenter;
     await addAll(items);
     super.onLoad();

@@ -15,9 +15,14 @@ class HomeScreen extends PositionComponent with HasGameReference {
     final List<Component Function(PositionComponent component)> listEffects = EffectsLibary.allEffects();
     final Vector2 sizeScroll = Vector2(width*0.9, height*0.9);
     add(ScrollComponent(
+      direction: ScrollComponentDirection.vertical,
         size: sizeScroll, 
         items: [
-          WrapComponent(alignment: WrapAlignment.start, runSpacing: 10, spacing: ((sizeScroll.x - sizeItem.x * 3) / 2), children: [
+          WrapComponent(
+            alignment: WrapAlignment.start,
+            runSpacing: 10, 
+            spacing: ((sizeScroll.x - sizeItem.x * 3) / 2),
+            children: [
             ...List.generate(listEffects.length, (index) {
               return ItemLibary(effect: listEffects[index], size: sizeItem);
             }),

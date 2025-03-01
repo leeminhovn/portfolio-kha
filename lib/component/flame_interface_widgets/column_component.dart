@@ -39,7 +39,7 @@ class ColumnComponent extends PositionComponent with SizeComponentProvider {
 
   @override
   // TODO: implement debugMode
-  bool get debugMode => true;
+  bool get debugMode => false;
   final double spacing;
   final MainAxisAlignment mainAxisAlignment;
   final CrossAxisAlignment crossAxisAlignment;

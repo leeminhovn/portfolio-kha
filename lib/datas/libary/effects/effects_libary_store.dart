@@ -5,7 +5,7 @@ import 'dart:ui';
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flame/experimental.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Image;
 import 'package:flutter/painting.dart';
 import 'package:portfolio_kha/component/commons/component_effect_base.dart';
 import 'package:portfolio_kha/component/commons/radius_box.dart';
@@ -272,42 +272,84 @@ class SlotMachineReel extends PositionComponent {
   // idItemsGet it is id of items get when slot machine reel stop
   final List<String> idItemsGet;
   // itemsWheel it is items in slot machine reel
-  final List<ItemSlotMachineReel> itemsWheel;
-  final int column;
+  final List<String> allItemsId;
+  final Image imageItemsWheel;
   void Function() onStartWheel;
   void Function() onCompleteWheel;
   final Vector2 sizeItem;
-
+   final List<ColumnSlotMachineReel> columnsItems = [];
   startWheel() {
     onStartWheel();
   }
-
   SlotMachineReel({
+    required this.allItemsId,
     required this.idItemsGet,
-    required this.itemsWheel,
-    required this.column,
     required this.onStartWheel,
     required this.onCompleteWheel,
     required this.sizeItem,
+    required this.imageItemsWheel,
     super.size
-  });
-
+  }) : 
+      assert(idItemsGet.length >= 3, 'Need at least 3 items in the wheel'){
+      for (int i = 0 ; i < idItemsGet.length ; i++) {
+        idItemsGet.shuffle();
+        columnsItems.add(ColumnSlotMachineReel(
+          items: allItemsId, 
+          sizeItem: sizeItem, 
+          index: i, 
+          slotMachineReel: this,
+          imageItemsWheel: imageItemsWheel
+        ));
+      }
+  }
+ 
   @override
   FutureOr<void> onLoad() {
-    width = sizeItem.x * column;
+    width = sizeItem.x * idItemsGet.length;
     height = sizeItem.y;
     debugColor = Colors.red;
     debugMode = true;
+    addAll(columnsItems);
+
     return super.onLoad();
   }
 }
 
-class ItemSlotMachineReel extends PositionComponent {
-  final String idItem;
-  ItemSlotMachineReel({required this.idItem, super.children});
+class ColumnSlotMachineReel extends Component {
+  final Vector2 sizeItem;
+  final int index;
+  final List<String> items;
+  final SlotMachineReel slotMachineReel;
+  final Image imageItemsWheel;
+  final List<SpriteComponent> spriteItemsImage = [];
+  final int showItem = 1;
+  ColumnSlotMachineReel({
+    required this.items,
+    required this.sizeItem,
+    required this.index,
+    required this.slotMachineReel,
+    required this.imageItemsWheel,
+  });
   @override
   FutureOr<void> onLoad() {
-    ;
+    debugColor = Colors.blue;
+    final Vector2 sizeImge = Vector2(sizeItem.x, sizeItem.y * items.length);
+    double firstPositionWheel = - (items.length - showItem - Random().nextInt(items.length - showItem)).round() * sizeItem.y;   
+
+     for (int i = 0; i < 2; i ++) {
+      spriteItemsImage.add(SpriteComponent.fromImage(imageItemsWheel, size: sizeImge));
+      spriteItemsImage.last.position += Vector2(index * sizeItem.x, 0);
+      spriteItemsImage.last.position += Vector2(0, firstPositionWheel);
+      if(i != 0) {
+        spriteItemsImage.last.position += Vector2(0, - sizeImge.y);
+      }
+
+      // else {
+      //   spriteItemsImage.last.position += Vector2(0, sizeItem.y);
+      // }
+      // spriteItemsImage.last.position = Vector2.all(0);
+    }
+    addAll(spriteItemsImage);
     return super.onLoad();
   }
 }

@@ -70,13 +70,18 @@ class EffectsLibary {
     return effect;
   }
   static Component slotMachineWheelEffect(PositionComponent component) {
-    final Vector2 sizeItem = Vector2(component.size.x /3, component.size.x /2,);
-    final List<String> allId = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
-    final List<Component> children = [AlignComponent(alignment: Anchor.center, child: SpriteComponent.fromImage(Flame.images.fromCache(AppImages.logo_image), size: sizeItem * 0.6),)];
-    
-    final List<ItemSlotMachineReel> allItemsWheel = allId.map((id) => ItemSlotMachineReel(idItem: id, children: children)).toList();
-    
-    return AlignComponent(alignment: Anchor.center, child: SlotMachineReel(idItemsGet: [], itemsWheel: allItemsWheel, column: 3, onStartWheel: () {}, onCompleteWheel: () {}, sizeItem: sizeItem)) ;
+    final Vector2 sizeItem = Vector2(component.size.x / 2.5, component.size.x / 2.5,);
+    final List<String> allId = ["zz", "tire", "angry", "money", "spiral", "circle", "smile", "x", "threeOval"];
+    return AlignComponent(alignment: Anchor.center, 
+      child: SlotMachineReel(
+          allItemsId: allId,
+          idItemsGet: ["angry", "spiral", "circle"], 
+          onStartWheel: () {}, 
+          onCompleteWheel: () {}, 
+          sizeItem: sizeItem,
+          imageItemsWheel:  Flame.images.fromCache(AppImages.column_slot_machine, ),
+        )
+      ) ;
   }
   static List<Component Function(PositionComponent component)> allEffects() => [
     sakeEffect, 
@@ -84,7 +89,6 @@ class EffectsLibary {
     moneyChangeStyle1,
     floatingEffect,
     bouncingScaleEffectOnce,
-    slotMachineWheelEffect
   ];
 }
 

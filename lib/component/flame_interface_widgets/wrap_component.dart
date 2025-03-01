@@ -13,7 +13,7 @@ enum WrapAlignment {
 
 class WrapComponent extends PositionComponent with SizeComponentProvider {
   @override
-  bool get debugMode => true;
+  bool get debugMode => false;
   late final PositionComponent _parentUp;
   WrapComponent({
     super.position,

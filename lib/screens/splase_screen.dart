@@ -36,18 +36,16 @@ class SplashScreenAppState extends State<SplashScreenApp> with SingleTickerProvi
 
   _effecting(void Function() onFinish) async {
     await _animationController.forward();
-    //   logic loading
-    await Future.delayed(Duration(milliseconds: 500));
-    //logic load
+    // await Future.delayed(Duration(milliseconds: 500));
     await loadAssets();
-    await _animationController.reverse();
-    isLoaded = true;
-    await Future.delayed(Duration(milliseconds: 500));
+    // await _animationController.reverse();
+    // isLoaded = true;
+    // await Future.delayed(Duration(milliseconds: 500));
 
-    await _animationController.forward();
-    await Future.delayed(Duration(milliseconds: 1000));
+    // await _animationController.forward();
+    // await Future.delayed(Duration(milliseconds: 1000));
 
-    await _animationController.reverse();
+    // await _animationController.reverse();
     onFinish();
   }
 

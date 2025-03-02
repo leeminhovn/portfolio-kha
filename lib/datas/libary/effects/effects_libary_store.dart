@@ -329,12 +329,16 @@ class ColumnSlotMachineReel extends PositionComponent {
     required this.imageItemsWheel,
     required this.targetItem,
     required this.spinDuration,
-  });
+  }) {
+    // Initialize with a random offset that aligns with item positions
+    currentOffset = (Random().nextInt(items.length)) * sizeItem.y;
+  }
+
   void startSpin() {
     if (!isSpinning) {
       isSpinning = true;
       spinTime = 0;
-      spinSpeed = 2000;
+      spinSpeed = 3000; // Increased initial speed for more dynamic feel
     }
   }
 
@@ -345,47 +349,48 @@ class ColumnSlotMachineReel extends PositionComponent {
     if (isSpinning) {
       spinTime += dt;
 
-      // Implement smooth deceleration using easing
-      if (spinTime > spinDuration * 0.5) {
-        final progress = (spinTime - spinDuration * 0.5) / (spinDuration * 0.5);
-        spinSpeed = 2000 * (1 - _easeOutCubic(progress)) + 50;
+      // Calculate deceleration using exponential decay
+      if (spinTime > spinDuration * 0.2) {
+        final progress = (spinTime - spinDuration * 0.2) / (spinDuration * 0.8);
+        // Exponential deceleration from initial speed to very slow
+        spinSpeed = 3000 * pow(0.1, progress) + 50;
       }
 
       currentOffset += spinSpeed * dt;
-      currentOffset = currentOffset % (sizeItem.y * items.length);
-
-      // Improved circular buffer for continuous display
       final double totalHeight = sizeItem.y * items.length;
+      currentOffset = currentOffset % totalHeight;
 
-      // Update first sprite
-      double yPos1 = currentOffset;
-      if (yPos1 > totalHeight) {
-        yPos1 -= totalHeight;
-      }
-      spriteItemsImage[0].position.y = yPos1;
-
-      // Update second sprite to maintain continuous display
-      double yPos2 = yPos1 - totalHeight;
-      if (yPos2 < -totalHeight) {
-        yPos2 += totalHeight;
-      }
-      spriteItemsImage[1].position.y = yPos2;
+      updateSpritePositions(totalHeight);
 
       if (spinTime >= spinDuration) {
         isSpinning = false;
+        // Ensure smooth stop at target position
         int targetIndex = items.indexOf(targetItem);
         currentOffset = targetIndex * sizeItem.y;
-
-        // Ensure proper positioning of both sprites at the end
-        spriteItemsImage[0].position.y = currentOffset;
-        spriteItemsImage[1].position.y = currentOffset - sizeItem.y * items.length;
+        updateSpritePositions(totalHeight);
       }
     }
   }
 
-  // Cubic easing function for smooth deceleration
-  double _easeOutCubic(double t) {
-    return 1 - pow(1 - t, 3).toDouble();
+  void updateSpritePositions(double totalHeight) {
+    // Calculate base position for the first sprite
+    double yPos1 = currentOffset % totalHeight;
+
+    // Position the first sprite
+    spriteItemsImage[0].position.y = yPos1;
+
+    // Position the second sprite to ensure continuous scrolling
+    if (yPos1 > 0) {
+      // When first sprite has scrolled down, position second sprite above it
+      spriteItemsImage[1].position.y = yPos1 - totalHeight;
+    } else {
+      // When first sprite is at or above the top, position second sprite below it
+      spriteItemsImage[1].position.y = yPos1 + totalHeight;
+    }
+  }
+
+  double _easeOutQuart(double t) {
+    return 1 - pow(1 - t, 4).toDouble();
   }
 
   @override
@@ -397,7 +402,7 @@ class ColumnSlotMachineReel extends PositionComponent {
       final sprite = SpriteComponent.fromImage(
         imageItemsWheel,
         size: Vector2(sizeItem.x, sizeItem.y * items.length),
-        position: Vector2(0, i == 0 ? 0 : -sizeItem.y * items.length),
+        position: Vector2(0, i == 0 ? currentOffset : currentOffset - sizeItem.y * items.length),
         anchor: Anchor.topLeft,
       );
       spriteItemsImage.add(sprite);
